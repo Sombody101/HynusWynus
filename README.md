@@ -1,4 +1,4 @@
-![](GitAssets/HynusWynus.png)
+![](GitAssets/HynusWynus.svg)
 
 # HynusWynus - Windows Privilege Escalation Toolkit
 
