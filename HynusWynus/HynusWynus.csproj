@@ -1,0 +1,103 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>Resources\HynusWynus.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <StartupObject>HynusWynus.Program</StartupObject>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Properties\AssemblyInfo.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
+    </Content>
+    <Content Include="Resources\HynusWynus.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Spectre.Console" Version="0.47.0" />
+    <PackageReference Include="Spectre.Console.Json" Version="0.47.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\HynusWynus.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Remove="Assets\**" />
+    <Compile Remove="old\**" />
+    <Compile Remove="old_build\**" />
+    <Compile Remove="PayloadPrep\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <EmbeddedResource Remove="old\**" />
+    <EmbeddedResource Remove="old_build\**" />
+    <EmbeddedResource Remove="PayloadPrep\**" />
+    <None Remove="Assets\**" />
+    <None Remove="old\**" />
+    <None Remove="old_build\**" />
+    <None Remove="PayloadPrep\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Properties\AssemblyInfo.tt" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="HynusWynusModdingAPI">
+      <HintPath>..\HynusWynusModdingAPI\bin\Release\net7.0\HynusWynusModdingAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="Utils">
+      <HintPath>..\..\Utils\Utils.Core\bin\Release\net6.0\Utils.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Properties\AssemblyInfo.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AssemblyInfo.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+</Project>
