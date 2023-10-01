@@ -1,5 +1,4 @@
-﻿using CommandManager;
-using Spectre.Console;
+﻿using Spectre.Console;
 using System.Text;
 using Utils;
 
@@ -33,12 +32,12 @@ internal static class Logging
 
     public static void WriteData(string header, params string[] data)
     {
-        string text = $"{header}:\r\n";
+        StringBuilder text = new($"{header}:\r\n");
 
         foreach (string d in data)
-            text += "\t" + d + "\r\n";
+            text.Append("\t" + d + "\r\n");
 
-        WriteLine(text);
+        WriteLine(text.ToString());
     }
 
     public static void WriteException(string message, Exception e)
@@ -59,9 +58,8 @@ internal static class Logging
         string output = "";
         int cursorPos = prefixLen;
         int commandIndex = CommandParser.CommandHistory.Count;
-        CommandParser.CommandHistory.Add("");
 
-        int line = Console.CursorTop;
+        CommandParser.CommandHistory.Add("");
 
         while (true)
         {
@@ -120,17 +118,11 @@ internal static class Logging
                     potential.Reverse();
 
                     if (potential.Contains(trimmed) && potential.Count > 1)
-                    {
                         potential.Remove(trimmed);
-                        goto PresentPossibleCommands;
-                    }
 
                     // Check if all potential start with the same string
                     {
                         string assembled = "";
-
-                        if (potential.Count == 0)
-                            goto Finished;
 
                         string firstString = potential[0];
                         int minLength = firstString.Length;
@@ -138,20 +130,8 @@ internal static class Logging
                         foreach (string str in potential)
                             minLength = Math.Min(minLength, str.Length);
 
-                        for (int i = 0; i < minLength; i++)
-                        {
-                            char currentChar = firstString[i];
-                            foreach (string str in potential)
-                                if (str[i] != currentChar)
-                                {
-                                    assembled = firstString[..i];
-                                    goto Finished;
-                                }
-                        }
-
                         assembled = firstString[..minLength];
 
-                    Finished:
                         if (assembled != "")
                         {
                             output = assembled;
@@ -160,7 +140,6 @@ internal static class Logging
                         }
                     }
 
-                PresentPossibleCommands:
                     // List all possible commands to use
                     int longest = potential.ToArray().GetLongestLength();
                     int loop = 0;
@@ -245,7 +224,7 @@ internal static class Logging
     public static bool ReadBool(string question)
     {
         var answer = AnsiConsole.Prompt(new SelectionPrompt<string>()
-            .Title(question).PageSize(10).AddChoices(new[] { "Yes", "No" }));
+            .Title(question).PageSize(10).AddChoices("Yes", "No"));
 
         return answer is "Yes";
     }

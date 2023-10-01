@@ -1,4 +1,4 @@
-![](GitAssets/HynusWynus.svg)
+![](./GitAssets/HynusWynus.svg)
 
 # HynusWynus - Windows Privilege Escalation Toolkit
 
@@ -28,7 +28,7 @@ We welcome contributions from the security community. If you'd like to contribut
 
 ## License
 
-This project is licensed under the [MIT License](link-to-license).
+This project is licensed under the [MIT License](./LICENSE.txt).
 
 ---
 

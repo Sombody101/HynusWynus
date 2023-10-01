@@ -1,13 +1,13 @@
 namespace HynusWynusModdingAPI.Shared.Exceptions;
 
-public class InvalidCommandData : Exception
+public class InvalidCommandDataException : Exception
 {
-    public InvalidCommandData(string message)
+    public InvalidCommandDataException(string message)
         : base(message) { }
 }
 
-public class InvalidVersionStringFormat : Exception
+public class InvalidVersionStringFormatException : Exception
 {
-    public InvalidVersionStringFormat(string message)
+    public InvalidVersionStringFormatException(string message)
         : base(message) { }
 }

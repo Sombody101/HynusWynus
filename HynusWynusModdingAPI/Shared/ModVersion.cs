@@ -39,21 +39,21 @@ public readonly struct ModVersion
         var split = version.Split('.');
 
         if (split.Length != 4)
-            throw new InvalidVersionStringFormat("The version string must have 4 segments Major.Minor.Build.Revision");
+            throw new InvalidVersionStringFormatException("The version string must have 4 segments Major.Minor.Build.Revision");
 
         if (!uint.TryParse(split[0], out var major))
-            throw new InvalidVersionStringFormat("The version string Major must be a valid UInt32");
+            throw new InvalidVersionStringFormatException("The version string Major must be a valid UInt32");
         if (!uint.TryParse(split[1], out var minor))
-            throw new InvalidVersionStringFormat("The version string Minor must be a valid UInt32");
+            throw new InvalidVersionStringFormatException("The version string Minor must be a valid UInt32");
         if (!uint.TryParse(split[2], out var build))
-            throw new InvalidVersionStringFormat("The version string Build must be a valid UInt32");
+            throw new InvalidVersionStringFormatException("The version string Build must be a valid UInt32");
         if (!uint.TryParse(split[3], out var revision))
-            throw new InvalidVersionStringFormat("The version string Revision must be a valid UInt32");
+            throw new InvalidVersionStringFormatException("The version string Revision must be a valid UInt32");
 
-        Major = (uint)major;
-        Minor = (uint)minor;
-        Build = (uint)build;
-        Revision = (uint)revision;
+        Major = major;
+        Minor = minor;
+        Build = build;
+        Revision = revision;
         AsString = version;
     }
 

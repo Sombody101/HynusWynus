@@ -7,7 +7,7 @@ using System.Text;
 
 namespace HynusWynus;
 
-public class Program
+internal static class Program
 {
     static bool toldYouSo = false;
     public static void Main()

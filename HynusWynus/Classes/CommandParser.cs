@@ -13,8 +13,8 @@ namespace HynusWynus;
 
 public class Command
 {
-    public string All = "";
-    public string[] args;
+    public string All { get; set; }
+    public string[] args { get; set; }
     private string? _cmd;
 
     public Command(string CommandString)
@@ -48,16 +48,14 @@ public class Command
 
     public bool HasArg(string arg)
         => args.Contains(arg);
-
-    public void Test(Command cmd) { }
 }
 
 public static partial class CommandParser
 {
-    public static readonly List<string> CommandHistory = new();
+    internal static readonly List<string> CommandHistory = new();
 
     [JsonProperty("app_defined_variables")]
-    public static Dictionary<string, string> EnvironmentVariables = new()
+    public static Dictionary<string, string> EnvironmentVariables { get; set; } = new()
     {
         { "$VERSION", Assembly.GetExecutingAssembly().GetName().Version!.ToString() },
         { "$HOSTNAME", Environment.MachineName },
@@ -73,9 +71,9 @@ public static partial class CommandParser
     };
 
     [JsonProperty("user_defined_variables")]
-    public static Dictionary<string, string> UserDefinedVariables = new();
+    public static Dictionary<string, string> UserDefinedVariables { get; set; } = new();
 
-    public static readonly List<string> Commands = new()
+    internal static readonly List<string> Commands = new()
     {
         //"disable-defender",
 
@@ -352,7 +350,7 @@ public static partial class CommandParser
     public static void LaunchPeas(Command cmd) // Redesign
     {
         Logging.Log($"Starting PEASS...");
-        string file = "";
+        string file;
 
         switch (cmd.GetArg(1).ToLower())
         {
@@ -402,7 +400,7 @@ public static partial class CommandParser
     private static void ShowProcesses(Command cmd)
     {
         string key = "";
-        ProcFilter pf = ProcFilter.ShowDefault;
+        ProcFilter pf = ProcFilter.None;
         bool skipPattern = false;
 
         switch (cmd.GetArg(1).ToLower())
@@ -432,7 +430,13 @@ public static partial class CommandParser
                 return;
         }
 
-        if (!skipPattern && cmd.args.Length > 0)
+        if (cmd.args.Length < 2)
+        {
+            Logging.LogError("No search value provided");
+            return;
+        }
+
+        if (!skipPattern)
         {
             key = string.Join(" ", cmd.args.Skip(1));
 
@@ -448,8 +452,8 @@ public static partial class CommandParser
                 key = key.Remove(0, 1);
             }
 
-            if (pf is ProcFilter.ShowDefault)
-                pf = ProcFilter.Equals;
+            if (!pf.HasFlag(ProcFilter.StartsWith) && !pf.HasFlag(ProcFilter.EndsWith))
+                pf |= ProcFilter.Equals;
         }
 
         ProcessManager.PrintProcesses(pf, key.Trim());
@@ -461,6 +465,12 @@ public static partial class CommandParser
         switch (cmd.GetArg(1).ToLower())
         {
             case "get":
+                if (SettingsManager.SerializedSettings is null)
+                {
+                    Logging.LogError("Settings have not been configured yet");
+                    return;
+                }
+
                 if (setting == "")
                     foreach (var set in SettingsManager.SerializedSettings)
                         AnsiConsole.MarkupLine(MarkupCommand($"{set.Key}     \t= {set.Value}"));
@@ -474,6 +484,12 @@ public static partial class CommandParser
                 break;
 
             case "set":
+                if (SettingsManager.SerializedSettings is null)
+                {
+                    Logging.LogError("Settings have not been configured yet");
+                    return;
+                }
+
                 if (cmd.args.Length < 2)
                 {
                     Logging.LogWarning("No value provided to set");
@@ -543,12 +559,8 @@ public static partial class CommandParser
                 }
             }
             else
-            {
-                foreach (var mod in asmMod.Mods)
-                {
-                    modAssembly.AddNode($"[gray]{mod.Mod.IndexName} ([white]{mod.Mod.Version.VersionString}[/])[/]");
-                }
-            }
+                foreach (var mod in asmMod.Mods.Select(mod => mod.Mod))
+                    modAssembly.AddNode($"[gray]{mod.IndexName} ([white]{mod.Version.VersionString}[/])[/]");
         }
 
         AnsiConsole.Write(moddingRoot);
@@ -803,13 +815,21 @@ public static partial class CommandParser
     {
         static string AssembleDescription(string command, string description, Dictionary<string, string>? options = null)
         {
-            string output = $"\t[gold1]{command}[/][white]:".PadRight(56) + description + "[/]\r\n";
+            StringBuilder output = new();
+
+            output.Append($"\t[gold1]{command}[/][white]:".PadRight(56));
+            output.Append(description);
+            output.Append("[/]\r\n");
 
             if (options is not null)
                 foreach (var element in options)
-                    output += $"\t\t[red]{element.Key}[/][white]:".PadRight(50) + element.Value + "[/]\r\n";
+                {
+                    output.Append($"\t\t[red]{element.Key}[/][white]:".PadRight(50));
+                    output.Append(element.Value);
+                    output.Append("[/]\r\n");
+                }
 
-            return output;
+            return output.ToString();
         }
 
         if (option != "" && !Commands.Contains(option))
@@ -873,13 +893,13 @@ public static partial class CommandParser
 
         if (option is "" or "procs")
             AnsiConsole.MarkupLine(AssembleDescription(
-                "procs", $"Shows running processes (Defaults to apps with the same session ID as {Paths.AppName})",
+                "procs <option> [[(*)<term>(*)]]", $"Shows running processes (Defaults to apps with the same session ID as {Paths.AppName})",
                 new()
                 {
-                    {"-name (*)<term>(*)", "Filters processes based on their name" },
-                    {"-pid  (*)<term>(*)", "Filters processes based on their PID (process ID)" },
-                    {"-si   (*)<term>(*)", "Filters processes based on their SI (session ID)" },
-                    {"(*)<search term>(*)", "A string of text, or number, with a wildcard on either side for search filtering\r\n\t\t\t(Example: [gold1]procs[/] [red]-name[/] *nus*" },
+                    {"-name", "Filters processes based on their name" },
+                    {"-pid", "Filters processes based on their PID (process ID)" },
+                    {"-si", "Filters processes based on their SI (session ID)" },
+                    {"(*)<term>(*)", "A string of text, or number, with a wildcard on either side for search filtering\r\n\t\t\t(Example: [gold1]procs[/] [red]-name[/] *nus*" },
                 }
             ));
 
@@ -888,6 +908,7 @@ public static partial class CommandParser
                 "bte", $"[red]Burn The Evidence[/] | Removes all files assosiated with {Paths.AppName}. Including Assets/*, and HynusWynus.exe/.dll"
 
                 ));
+
     }
 
     // String command manipulation
@@ -899,9 +920,8 @@ public static partial class CommandParser
 
         foreach (var word in noMarkupCmds)
         {
-            if (word.Length > 1)
-                if (word[0] == '-')
-                    commandStr = ReplaceFirst(commandStr, word, $"[red]{word}[/]");
+            if (word.Length > 1 && word[0] == '-')
+                commandStr = ReplaceFirst(commandStr, word, $"[red]{word}[/]");
 
             if (UInt128.TryParse(word.Replace('*', ' '), out var _))
                 commandStr = ReplaceFirst(commandStr, word, $"[yellow]{word}[/]");
@@ -972,28 +992,14 @@ public static partial class CommandParser
     public static string[] ExtractQuotedStrings(string[] input)
     {
         List<string> output = new();
-        bool inQuotes = false;
-        string currentString = "";
 
         foreach (string item in input)
         {
-            if (!inQuotes)
-            {
-                if ((item.StartsWith("\"") && item.EndsWith("\"")) ||
-                    (item.StartsWith("'") && item.EndsWith("'")))
-                    output.Add(item.Trim('\'', '"'));
-                else
-                    output.Add(item);
-            }
+            if ((item.StartsWith('\"') && item.EndsWith('\"')) ||
+                (item.StartsWith('\'') && item.EndsWith('\'')))
+                output.Add(item.Trim('\'', '"'));
             else
-            {
-                currentString += " " + item;
-                if ((item.EndsWith("\"") || item.EndsWith("'")))
-                {
-                    inQuotes = false;
-                    output.Add(currentString.Trim('\'', '"'));
-                }
-            }
+                output.Add(item);
         }
 
         return output.ToArray();
@@ -1073,7 +1079,7 @@ public static partial class CommandParser
         return match.Success ? match.Groups["comment"].Value.Trim() : "";
     }
 
-    static int GetCommentIndex(string command)
+    public static int GetCommentIndex(string command)
     {
         var match = CommentRegex().Match(command);
         return match.Success ? match.Groups["comment"].Index : -1;

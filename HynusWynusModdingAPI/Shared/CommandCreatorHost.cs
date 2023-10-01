@@ -27,7 +27,7 @@ public class CommandCreatorHost
     public List<CommandCreator> GetActiveCommands()
         => new(addedCommands);
 
-    private readonly List<CommandCreator> addedCommands = new();
+    private readonly List<CommandCreator> addedCommands;
 }
 
 /// <summary>
@@ -64,10 +64,10 @@ public class CommandCreator
         set
         {
             if (value == "")
-                throw new InvalidCommandData("The command name cannot be empty");
+                throw new InvalidCommandDataException("The command name cannot be empty");
 
             if (value == ":")
-                throw new InvalidCommandData("Commands cannot contain ':', it's used for command ambiguity");
+                throw new InvalidCommandDataException("Commands cannot contain ':', it's used for command ambiguity");
 
             commandName = value;
         }

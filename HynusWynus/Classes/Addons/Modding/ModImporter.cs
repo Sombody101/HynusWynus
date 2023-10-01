@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace HynusWynus.Classes.Addons.Modding;
 
-internal class ModImporter
+internal static class ModImporter
 {
     public static readonly List<AssemblyMod> LoadedMods = new();
 
@@ -86,7 +86,7 @@ internal class ModImporter
 
 internal static class ModFinder
 {
-    public static string GetMethodName<T>(Action<T> action)
+    public static string? GetMethodName<T>(Action<T> action)
     {
         if (action == null)
             return null;
@@ -141,7 +141,7 @@ internal static class ModFinder
                 ModImporter.LoadedMods
                     .Where(asmMod => asmMod.Assembly.GetName().Name.FixName() == asmName.ToLower())
                     .SelectMany(asmMod => asmMod.Mods
-                        .Where(mod => mod.Mod.IndexName.FixName() == modName.FixName() && mod.Commands.Any(cmd => cmd.CommandName.ToLower() == modCommand.ToLower()))
+                        .Where(mod => mod.Mod.IndexName.FixName() == modName.FixName() && mod.Commands.Exists(cmd => cmd.CommandName.ToLower() == modCommand.ToLower()))
                         .SelectMany(mod => mod.Commands.Where(cmd => cmd.CommandName.ToLower() == modCommand.ToLower()))
                         .Select(cmd => cmd.CommandHandler)
                     )
@@ -151,9 +151,9 @@ internal static class ModFinder
         {
             matchingActions.AddRange(
                 ModImporter.LoadedMods
-                    .Where(asmMod => asmMod.Mods.Select(mod => mod.Mod.IndexName.FixName()).ToArray().Contains(modName))
+                    .Where(asmMod => asmMod.Mods.Select(mod => mod.Mod.IndexName.FixName()).AsEnumerable().Contains(modName))
                     .SelectMany(asmMod => asmMod.Mods
-                        .Where(mod => mod.Mod.IndexName.FixName() == modName.FixName() && mod.Commands.Any(cmd => cmd.CommandName.ToLower() == modCommand.ToLower()))
+                        .Where(mod => mod.Mod.IndexName.FixName() == modName.FixName() && mod.Commands.Exists(cmd => cmd.CommandName.ToLower() == modCommand.ToLower()))
                         .SelectMany(mod => mod.Commands.Where(cmd => cmd.CommandName.ToLower() == modCommand.ToLower()))
                         .Select(cmd => cmd.CommandHandler)
                     )
@@ -216,7 +216,7 @@ internal static class ModFinder
                 .Where(mod =>
                     (string.IsNullOrEmpty(asmName) || asmMod.Assembly.GetName().Name.FixName() == asmName.ToLower()) &&
                     (string.IsNullOrEmpty(modName) || mod.Mod.IndexName.ToLower() == modName.ToLower()) &&
-                    mod.Commands.Any(cmd => cmd.CommandName.ToLower() == modCommand.ToLower())
+                    mod.Commands.Exists(cmd => cmd.CommandName.ToLower() == modCommand.ToLower())
                 )
                 .Select(mod =>
                 {
@@ -283,7 +283,7 @@ internal static class ModFinder
             }
             else if (modName != "")
             {
-                var asm = ModImporter.LoadedMods.Where(asmMod => asmMod.Mods.Select(mod => mod.Mod.IndexName.ToLower()).ToArray().Contains(modName)).ToArray();
+                var asm = ModImporter.LoadedMods.Where(asmMod => asmMod.Mods.Select(mod => mod.Mod.IndexName.ToLower()).AsEnumerable().Contains(modName)).ToArray();
                 if (asm.Length != 1)
                     return null;
 
@@ -322,10 +322,10 @@ internal static class ModFinder
     }
 
     public static int LoadedMods()
-        => ModImporter.LoadedMods.Where(asmMod => asmMod.IsLoaded == true).ToArray().Length;
+        => ModImporter.LoadedMods.Where(asmMod => asmMod.IsLoaded).ToArray().Length;
 
-    public static string FixName(this string name)
-        => name.ToLower().Replace(' ', '_');
+    public static string FixName(this string? name)
+        => name is null ? "N/A" : name.ToLower().Replace(' ', '_');
 }
 
 /*

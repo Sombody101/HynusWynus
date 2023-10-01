@@ -22,7 +22,6 @@ public class Settings
         false;
 #endif
 
-    //public bool SkipLaunchChecks { get; set; } = false;
     [JsonProperty("show_logo_on_launch")]
     public bool ShowLogoOnStart { get; set; } = true;
     
@@ -59,7 +58,7 @@ public static class SettingsManager
     }
 
     public static Settings Settings { get; set; } = new();
-    public static JObject SerializedSettings { get; set; }
+    public static JObject? SerializedSettings { get; set; }
 
     public static void WriteJsonSettings()
     {

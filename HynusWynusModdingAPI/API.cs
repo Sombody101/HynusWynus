@@ -5,9 +5,8 @@ namespace HynusWynusModdingAPI;
 /// </summary>
 public static class API
 {
-    public static CommandParserPointer CommandParser;
-    public static LoggingPointer Logging;
-    public static SettingsManagerPointer SettingsManager;
+    public static CommandParserPointer CommandParser { get; set; }
+    public static LoggingPointer Logging { get; set; }
 
     public class CommandParserPointer
     {
@@ -17,17 +16,17 @@ public static class API
         /// Environment variables cannot be unset by the user, but can be modified
         /// </para>
         /// </summary>
-        public d_GetEnvironmentVariables GetEnvironmentVariables;
+        public required d_GetEnvironmentVariables GetEnvironmentVariables { get; set; }
 
         /// <summary>
         /// Get an environment variable, or an empty string if it doesn't exist
         /// </summary>
-        public d_GetEnvironmentVariable GetEnvironmentVariable;
+        public required d_GetEnvironmentVariable GetEnvironmentVariable { get; set; }
 
         /// <summary>
         /// Get an environment variable, or null if it doesn't exist
         /// </summary>
-        public d_GetNullEnvironmentVariable GetNullEnvironmentVariable;
+        public required d_GetNullEnvironmentVariable GetNullEnvironmentVariable { get; set; }
 
         /// <summary>
         /// Set an environment variable
@@ -35,37 +34,37 @@ public static class API
         /// Environment variables cannot be unset by the user, but can be modified
         /// </para>
         /// </summary>
-        public d_SetEnvironmentVariable SetEnvironmentVariable;
+        public required d_SetEnvironmentVariable SetEnvironmentVariable { get; set; }
 
         /// <summary>
         /// Get a copy of the variables defined by the user
         /// </summary>
-        public d_GetUserDefinedVariables GetUserDefinedVariables;
+        public required d_GetUserDefinedVariables GetUserDefinedVariables { get; set; }
 
         /// <summary>
         /// Get a user defined variable, or an empty string if it doesn't exist
         /// </summary>
-        public d_GetUserDefinedVariable GetUserVariable;
+        public required d_GetUserDefinedVariable GetUserVariable { get; set; }
 
         /// <summary>
         /// Get a user defined variable, or null if it doesn't exist
         /// </summary>
-        public d_GetNullUserDefinedVariable GetNullUserVariable;
+        public required d_GetNullUserDefinedVariable GetNullUserVariable { get; set; }
 
         /// <summary>
         /// Set a user defined variable
         /// </summary>
-        public d_SetUserDefinedVariable SetUserVariable;
+        public required d_SetUserDefinedVariable SetUserVariable { get; set; }
 
         /// <summary>
         /// Returns a new string with Spectre.Console markup 
         /// </summary>
-        public d_MarkupCommand MarkupCommand;
+        public required d_MarkupCommand MarkupCommand { get; set; }
 
         /// <summary>
         /// All commands entered by the user
         /// </summary>
-        public d_GetCommandHistory GetCommandHistory;
+        public required d_GetCommandHistory GetCommandHistory { get; set; }
 
 
         public delegate Dictionary<string, string> d_GetEnvironmentVariables();
@@ -88,42 +87,42 @@ public static class API
         /// <summary>
         /// Write a markup line
         /// </summary>
-        public d_WriteLine WriteLine;
+        public required d_WriteLine WriteLine { get; set; }
 
         /// <summary>
         /// Write markup text (without a newline)
         /// </summary>
-        public d_Write Write;
+        public required d_Write Write { get; set; }
 
         /// <summary>
         /// Create a log
         /// </summary>
-        public d_Log Log;
+        public required d_Log Log { get; set; }
 
         /// <summary>
         /// Create a warning log
         /// </summary>
-        public d_LogWarning LogWarning;
+        public required d_LogWarning LogWarning { get; set; }
 
         /// <summary>
         /// Create a error log
         /// </summary>
-        public d_LogError LogError;
+        public required d_LogError LogError { get; set; }
 
         /// <summary>
         /// Write a separator title
         /// </summary>
-        public d_WriteTitle WriteTitle;
+        public required d_WriteTitle WriteTitle { get; set; }
 
         /// <summary>
         /// Write data to the console
         /// </summary>
-        public d_WriteData WriteData;
+        public required d_WriteData WriteData { get; set; }
 
         /// <summary>
         /// Write a markup exception with a message
         /// </summary>
-        public d_WriteException WriteException;
+        public required d_WriteException WriteException { get; set; }
 
         public delegate void d_WriteLine(string line = "");
         public delegate void d_Write(string text = "");
@@ -133,10 +132,5 @@ public static class API
         public delegate void d_WriteTitle(string title);
         public delegate void d_WriteData(string header, params string[] data);
         public delegate void d_WriteException(string message, Exception exception);
-    }
-
-    public class SettingsManagerPointer
-    {
-
     }
 }

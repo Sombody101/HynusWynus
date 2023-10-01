@@ -8,7 +8,7 @@ namespace HynusWynus.Classes;
 
 internal static class ProcessManager
 {
-    public static Process[] Processes { get; private set; }
+    public static Process[]? Processes { get; private set; }
 
     [DllImport("dbghelp.dll", SetLastError = true)]
     private static extern bool MiniDumpWriteDump(IntPtr hProcess, uint processId, SafeHandle hFile, uint dumpType,
@@ -157,14 +157,29 @@ internal static class ProcessManager
             // i hate this
             if (pf == ProcFilter.ShowAll)
                 output.Add(proc);
-            else if (pf == ProcFilter.ShowDefault)
+            else if (pf == ProcFilter.None)
             {
                 if (proc.SessionId == SI)
                     output.Add(proc);
             }
-            if (pf == ProcFilter.Equals)
+            else if (pf.HasFlag(ProcFilter.Equals))
             {
-                if (proc.ProcessName == searchKey)
+                if (pf.HasFlag(ProcFilter.IndexingName))
+                {
+                    if (proc.ProcessName == searchKey)
+                        output.Add(proc);
+                }
+                else if (pf.HasFlag(ProcFilter.IndexingPID))
+                {
+                    if (proc.Id.ToString() == searchKey)
+                        output.Add(proc);
+                }
+                else if (pf.HasFlag(ProcFilter.IndexingSI))
+                {
+                    if (proc.SessionId.ToString() == searchKey)
+                        output.Add(proc);
+                }
+                else if (proc.ProcessName == searchKey)
                     output.Add(proc);
             }
             else if (pf.HasFlag(ProcFilter.StartsWith) && !pf.HasFlag(ProcFilter.EndsWith))
@@ -250,9 +265,9 @@ internal static class ProcessManager
 [Flags]
 public enum ProcFilter
 {
-    ShowDefault,
-    ShowAll,
-    Equals,
+    None = 0,
+    ShowAll = 1,
+    Equals = 2,
     StartsWith = 4,
     EndsWith = 8,
     IndexingPID = 16,
