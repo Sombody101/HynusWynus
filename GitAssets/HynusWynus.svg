@@ -2,14 +2,14 @@
     <style>
         @font-face {
             font-family: 'Lighters DEMO';
-            src: url('lightersdemo-z8p30-webfont.woff2') format('woff2'),
-                 url('lightersdemo-z8p30-webfont.woff') format('woff');
+            src: url('/GitAssets/lightersdemo-z8p30-webfont.woff2') format('woff2'),
+                 url('/GitAssets/lightersdemo-z8p30-webfont.woff') format('woff');
         }
 
         @font-face {
             font-family: 'Yeysk';
-            src: url('yeyskregular-jzam-webfont.woff2') format('woff2'),
-                 url('yeyskregular-jzam-webfont.woff') format('woff');
+            src: url('/GitAssets/yeyskregular-jzam-webfont.woff2') format('woff2'),
+                 url('/GitAssets/yeyskregular-jzam-webfont.woff') format('woff');
         }
     </style>
     <g transform="translate(-482 -668)">
