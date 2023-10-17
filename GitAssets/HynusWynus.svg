@@ -8,8 +8,8 @@
 
         @font-face {
             font-family: 'Yeysk';
-            src: url('/GitAssets/yeyskregular-jzam-webfont.woff2') format('woff2'),
-                 url('/GitAssets/yeyskregular-jzam-webfont.woff') format('woff');
+            src: url('https://github.com/Sombody101/HynusWynus/raw/master/GitAssets/yeyskregular-jzam-webfont.woff2') format('woff2'),
+                 url('https://github.com/Sombody101/HynusWynus/raw/master/GitAssets/yeyskregular-jzam-webfont.woff') format('woff');
         }
     </style>
     <g transform="translate(-482 -668)">
