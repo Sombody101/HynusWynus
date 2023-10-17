@@ -65,7 +65,7 @@ internal static class Logging
         {
             prefixLen = prefixName.Length + CommandParser.EnvironmentVariables["$PROMPTPREFIX"].Length + prefixChar.Length + 1;
             CommandParser.CommandHistory[commandIndex] = output;
-            Write(($"\r[magenta1]{prefixName}[/] [blue]{CommandParser.EnvironmentVariables["$PROMPTPREFIX"]}[/][white]{prefixChar}[/]" + CommandParser.MarkupCommand(output)).PadRight(Console.BufferWidth));
+            Write(($"\r[magenta1]{prefixName}[/] [blue]{CommandParser.EnvironmentVariables["$PROMPTPREFIX"]}[/][white]{prefixChar}[/]" + CommandParser.MarkupCommand(output)).PadMarkupRight(Console.BufferWidth));
 
             if (output.Length + prefixLen > Console.BufferWidth)
                 cursorPos = Console.BufferWidth - 1;
@@ -187,14 +187,14 @@ internal static class Logging
             {
                 if (commandIndex - 1 > -1)
                     output = CommandParser.CommandHistory[--commandIndex];
-                Console.Write(" ".PadRight(output.Length));
+                Console.Write(" ".PadMarkupRight(output.Length));
                 cursorPos = output.Length + prefixLen;
             }
             else if (key.Key == ConsoleKey.DownArrow)
             {
                 if (commandIndex + 1 < CommandParser.CommandHistory.Count)
                     output = CommandParser.CommandHistory[++commandIndex];
-                Console.Write(" ".PadRight(output.Length));
+                Console.Write(" ".PadMarkupRight(output.Length));
                 cursorPos = output.Length + prefixLen;
             }
 

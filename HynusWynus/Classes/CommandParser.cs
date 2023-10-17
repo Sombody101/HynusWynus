@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using HynusWynusModdingAPI.Shared;
 
 namespace HynusWynus;
 
@@ -54,6 +55,9 @@ public static partial class CommandParser
 {
     internal static readonly List<string> CommandHistory = new();
 
+    /// <summary>
+    /// Variables defined by HynusWynus used for volatile configurations or checking what the terminal supports
+    /// </summary>
     [JsonProperty("app_defined_variables")]
     public static Dictionary<string, string> EnvironmentVariables { get; set; } = new()
     {
@@ -70,6 +74,9 @@ public static partial class CommandParser
         { "$SUPPORTSLINKS", AnsiConsole.Profile.Capabilities.Links ? "true" : "false" }
     };
 
+    /// <summary>
+    /// Variables defined by the user
+    /// </summary>
     [JsonProperty("user_defined_variables")]
     public static Dictionary<string, string> UserDefinedVariables { get; set; } = new();
 
@@ -290,6 +297,9 @@ public static partial class CommandParser
                 return;
 
             default:
+                if (CommandFinish.Finish(cmd.Cmd))
+                    break;
+
                 if (!cmd.Cmd.Contains(':'))
                 {
                     Logging.LogError($"Unknown command \"[yellow]{cmd.Cmd}[/]\" : Use '[gold1]help[/]' for a list of commands");
@@ -817,16 +827,14 @@ public static partial class CommandParser
         {
             StringBuilder output = new();
 
-            output.Append($"\t[gold1]{command}[/][white]:".PadRight(56));
-            output.Append(description);
-            output.Append("[/]\r\n");
+            output.Append($"\t[gold1]{command}[/][white]:".PadMarkupRight(35));
+            output.Append(description + "[/]\r\n");
 
             if (options is not null)
                 foreach (var element in options)
                 {
-                    output.Append($"\t\t[red]{element.Key}[/][white]:".PadRight(50));
-                    output.Append(element.Value);
-                    output.Append("[/]\r\n");
+                    output.Append($"\t\t[red]{element.Key}[/][white]:".PadMarkupRight(35));
+                    output.Append(element.Value + "[/]\r\n");
                 }
 
             return output.ToString();
@@ -855,16 +863,16 @@ public static partial class CommandParser
                     { "aliases", "mimi, katz" },
 
                     // Mimikatz commands (too lazy to make it work, so just lots of backspaces)
-                    { "[cyan]Mimikatz commands[/]", $"\b\b[red]Theses commands will only work inside mimikatz (Not {Paths.AppName})[/]" },
-                    { "\texit", "\b\b\b\b\b\b\bQuit mimikatz" },
-                    { "\tcls", "\b\b\b\b\b\b\bClear screen (doesn't work with redirections, like PsExec)" },
-                    { "\tsleep", "\b\b\b\b\b\b\bSleep an amount of milliseconds" },
-                    { "\tlog", "\b\b\b\b\b\b\bLog mimikatz input/output to file" },
-                    { "\tbase64", "\b\b\b\b\b\b\bSwitch file input/output base64" },
-                    { "\tversion", "\b\b\b\b\b\b\bDisplay some version information" },
-                    { "\tcd", "\b\b\b\b\b\b\bChange or display current directory" },
-                    { "\tlocaltime", "\b\b\b\b\b\b\bDisplays system local date and time (OJ command)" },
-                    { "\thostname", "\b\b\b\b\b\b\bDisplays system local hostname" }
+                    { "[cyan]Mimikatz commands[/]", $"[red]Theses commands will only work inside mimikatz (Not {Paths.AppName})[/]" },
+                    { "\texit",         "Quit mimikatz" },
+                    { "\tcls",          "Clear screen (doesn't work with redirections, like PsExec)" },
+                    { "\tsleep",        "Sleep an amount of milliseconds" },
+                    { "\tlog",          "Log mimikatz input/output to file" },
+                    { "\tbase64",       "Switch file input/output base64" },
+                    { "\tversion",      "Display some version information" },
+                    { "\tcd",           "Change or display current directory" },
+                    { "\tlocaltime",    "Displays system local date and time (OJ command)" },
+                    { "\thostname",     "Displays system local hostname" }
                 }
             ));
 
@@ -911,7 +919,8 @@ public static partial class CommandParser
 
     }
 
-    // String command manipulation
+    /* String command manipulation */
+    
     public static string MarkupCommand(string commandStr)
     {
         commandStr = commandStr.EscapeMarkup();
@@ -1048,7 +1057,8 @@ public static partial class CommandParser
         return parts;
     }
 
-    // Regex
+    /* Regex */
+
     public static List<string> GetVariables(string input)
         => VariableRegex().Matches(input).Select(match => match.Value).ToList();
 
@@ -1088,7 +1098,8 @@ public static partial class CommandParser
     public static bool IsVariableAssignment(string input)
         => VariableAssignmentRegex().IsMatch(input);
 
-    // Compile time regex
+    /* Compile time regex */
+
     [GeneratedRegex("\\$[A-Za-z0-9_\\-]+")]
     private static partial Regex VariableRegex();
 

@@ -1,8 +1,7 @@
 ﻿using HynusWynus.Classes;
 using HynusWynus.Classes.Addons.Modding;
+using HynusWynus.Classes.NonInteractive.HynusScript;
 using Spectre.Console;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace HynusWynus;
@@ -10,14 +9,27 @@ namespace HynusWynus;
 internal static class Program
 {
     static bool toldYouSo = false;
-    public static void Main()
+    public static void Main(string[] args)
     {
+        bool interactive = args.Length != 0;
+
         if (!OperatingSystem.IsWindows())
         {
             Console.WriteLine("This application was designed for Windows 10 and will crash immediately.\r\nPress enter to continue.");
-            Console.ReadKey();
+
+            if (!interactive)
+                Console.ReadKey();
             toldYouSo = true;
         }
+
+        HynusScriptReader.NewFromString(
+            $@"let t = 23;
+let fucker = ""fag"";
+if (t == 3) {{}}
+
+if t == 3 {{}}
+"
+            );
 
         // Maximize console window
         Console.OutputEncoding = Encoding.UTF8;
@@ -37,23 +49,23 @@ internal static class Program
         };
 #endif
 
-        Console.CancelKeyPress += (sender, e) => 
-        {
-            Console.CursorVisible = true;
-        };
-
         // Init settings
         Paths.Initialize();
         SettingsManager.Initialize();
 
-        // Write logo if it fits
-        if (SettingsManager.Settings.ShowLogoOnStart && Console.BufferWidth > logo[0])
-            AnsiConsole.Write(new Panel(logo) { Border = BoxBorder.None });
-        else
-            Logging.LogWarning($"[red]Buffer width is incredibly small ({Console.BufferWidth} chars) : Some if not all functions will be broken[/]");
+        if (!interactive)
+        {
+            Console.CancelKeyPress += (sender, e) => { e.Cancel = true; };
 
-        if (SettingsManager.Settings.ShowSettingsOnStart)
-            SettingsManager.WriteJsonSettings();
+            // Write logo if it fits
+            if (SettingsManager.Settings.ShowLogoOnStart && Console.BufferWidth > logo[0])
+                AnsiConsole.Write(new Panel(logo) { Border = BoxBorder.None });
+            else
+                Logging.LogWarning($"[red]Buffer width is incredibly small ({Console.BufferWidth} chars) : Some if not all functions will be broken[/]");
+
+            if (SettingsManager.Settings.ShowSettingsOnStart)
+                SettingsManager.WriteJsonSettings();
+        }
 
         // Import any mods if they exist
         ModImporter.ImportMods();

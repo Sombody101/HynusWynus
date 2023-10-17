@@ -18,18 +18,6 @@ HynusWynus is a powerful privilege escalation tool for Windows systems designed 
 > **Important:** This tool is intended for educational purposes only and should be used responsibly and ethically. The developer of HynusWynus cannot be held liable for any damage or misuse of this tool. It is your responsibility to ensure compliance with all relevant laws and ethical standards when using this software.
 ***Use at your own risk.***
 
-## Getting Started
-
-1. Goto [Releases]() and get the latest version of HynusWynus
-
-## Contributing
-
-We welcome contributions from the security community. If you'd like to contribute to HynusWynus, please follow our [contribution guidelines](link-to-contribution-guidelines).
-
-## License
-
-This project is licensed under the [MIT License](./LICENSE.txt).
-
 ---
 
 > [!NOTE]  
