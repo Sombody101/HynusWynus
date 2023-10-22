@@ -6,7 +6,7 @@ using System.Text;
 
 namespace HynusWynus;
 
-internal static class Program
+internal static class HynusWynus
 {
     static bool toldYouSo = false;
     public static void Main(string[] args)
@@ -21,15 +21,6 @@ internal static class Program
                 Console.ReadKey();
             toldYouSo = true;
         }
-
-        HynusScriptReader.NewFromString(
-            $@"let t = 23;
-let fucker = ""fag"";
-if (t == 3) {{}}
-
-if t == 3 {{}}
-"
-            );
 
         // Maximize console window
         Console.OutputEncoding = Encoding.UTF8;
